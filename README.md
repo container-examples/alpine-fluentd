@@ -14,5 +14,5 @@ In the `files/in_docker.conf` file, change the different values to suit your nee
 
 ## Commands
 
-Build : `docker build -t perriea/alpine-fluentd .`
+Build : `docker build -t perriea/alpine-fluentd .`   
 Run : `docker run -d -p 24224:24224 -p 24224:24224/udp perriea/alpine-fluentd`
