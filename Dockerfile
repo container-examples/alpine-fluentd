@@ -11,13 +11,17 @@ ENV MINIO_ACCESS_KEY minio-access
 ENV MINIO_SECRET_KEY minio-secret
 
 # Installing dependencies
-RUN apk --update add --no-cache ruby ruby-irb
+RUN apk --update add --no-cache ruby ruby-irb su-exec
 RUN apk --update add --no-cache --virtual .build-deps build-base ruby-dev
 
 # Work path
 WORKDIR /scripts
 
-# Install Fluentd + plugins S3 & ES
+# Creating user Fluentd
+RUN addgroup fluentd && \
+        adduser -s /bin/false -G fluentd -S -D fluentd
+
+# Installing Fluentd + plugins S3 & ES
 RUN echo 'gem: --no-document' >> /etc/gemrc && \ 
         gem install oj && \
         gem install json && \
