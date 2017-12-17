@@ -1,36 +1,34 @@
-FROM alpine:3.6
+FROM alpine:3.7
 
 LABEL MAINTAINER="Aurelien PERRIER <a.perrier89@gmail.com>"
 LABEL APP="fluentd"
 LABEL APP_VERSION="0.14.23"
 LABEL APP_REPOSITORY="https://github.com/fluent/fluentd/releases"
-LABEL APP_DESCRIPTION="logging"
 
 ENV TIMEZONE Europe/Paris
 ENV FLUENTD_VERSION 0.14.23
+ENV MINIO_ACCESS_KEY minio-access
+ENV MINIO_SECRET_KEY minio-secret
 
 # Installing dependencies
 RUN apk --update add --no-cache ruby ruby-irb
-RUN apk --update add --no-cache --virtual .build-deps \
-    build-base \
-    wget \
-    tar \
-    ruby-dev
+RUN apk --update add --no-cache --virtual .build-deps build-base ruby-dev
 
-RUN mkdir -p /var/log/td-agent
+# Work path
+WORKDIR /scripts
 
-WORKDIR /root
-
+# Install Fluentd + plugins S3 & ES
 RUN echo 'gem: --no-document' >> /etc/gemrc && \ 
-        gem install oj -v 2.18.3 && \
-        gem install json -v 2.1.0 && \
+        gem install oj && \
+        gem install json && \
         gem install fluentd -v ${FLUENTD_VERSION} && \
         gem install fluent-plugin-s3 && \
         gem install fluent-plugin-elasticsearch && \
         apk del .build-deps
 
-COPY ./files/*.conf .
-COPY ./scripts/*.sh .
+# Coping config & scripts
+COPY ./files/in_docker.conf /etc/fluentd/in_docker.conf
+COPY ./scripts/start.sh start.sh
 
 EXPOSE 24224 24224/udp
 
