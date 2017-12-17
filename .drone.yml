@@ -6,9 +6,21 @@ pipeline:
     secrets: [ docker_username, docker_password ]
     tag:
       - latest
-      - "3.6"
+      - "3.7"
     when:
       branch: master
+      event: 
+        - push
+
+  publish_alpine_dev:
+    image: plugins/docker
+    repo: perriea/alpine-fluentd
+    dockerfile: Dockerfile
+    secrets: [ docker_username, docker_password ]
+    tag:
+      - dev
+    when:
+      branch: dev-alpine3.7
       event: 
         - push
 
